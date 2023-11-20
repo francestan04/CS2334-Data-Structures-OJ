@@ -1,0 +1,107 @@
+#include <iostream>
+#include <sstream>
+#include <vector>
+#include <string>
+using namespace std;
+
+class Node
+{
+public:
+  int data;
+  Node *next;
+};
+
+// Function to remove duplicates
+void removeDupe(Node *head)
+{
+  Node *current = head;
+  Node *next_node;
+
+  if (current == NULL)
+    return;
+
+  while (current != NULL && current->next != NULL)
+  {
+    next_node = current;
+    while (next_node->next != NULL)
+    {
+      if (current->data == next_node->next->data)
+      {
+        Node *duplicate = next_node->next;
+        next_node->next = next_node->next->next;
+        delete duplicate;
+      }
+      else
+      {
+        next_node = next_node->next;
+      }
+    }
+    current = current->next;
+  }
+}
+
+// Function to push new node at the head
+void pushNodeHead(Node **head, int data)
+{
+  Node *new_node = new Node();
+  new_node->data = data;
+  new_node->next = (*head);
+  (*head) = new_node;
+}
+
+// Function to print linked list in reverse order
+void reversePrint(Node *node, bool isFirstNode = true)
+{
+  if (node == NULL)
+    return;
+
+  reversePrint(node->next, false);
+  cout << node->data << " ";
+}
+
+int main()
+{
+  vector<Node *> lists;
+  vector<string> inputs;
+  string input;
+
+  while (getline(cin, input))
+  {
+    if (input.empty())
+      return 0;
+    inputs.push_back(input);
+  }
+
+  for (const string &line : inputs)
+  {
+    Node *list = NULL;
+    stringstream ss(line);
+    int value;
+
+    while (ss >> value)
+    {
+      pushNodeHead(&list, value);
+    }
+    removeDupe(list);
+    lists.push_back(list);
+  }
+  for (Node *list : lists)
+  {
+    reversePrint(list);
+    cout << endl;
+  }
+
+  // clean up memory
+  for (Node *list : lists)
+  {
+    Node *current = list;
+    while (current != NULL)
+    {
+      Node *next = current->next;
+      delete current;
+      current = next;
+    }
+  }
+
+  return 0;
+}

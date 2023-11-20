@@ -1,0 +1,176 @@
+// MERGE TWO SORTED LIST
+#include <iostream>
+#include <sstream>
+using namespace std;
+
+class ListNode
+{
+public:
+    int data;
+    ListNode *next;
+    // Default constructor
+    ListNode()
+    {
+        data = 0;
+        next = NULL;
+    }
+    // Parameterised Constructor
+    ListNode(int data)
+    {
+        this->data = data;
+        this->next = NULL;
+    }
+};
+
+class SingleLinkedlist
+{
+public:
+    ListNode *head;
+    SingleLinkedlist() { head = NULL; }
+    void insert(int data)
+    {
+        ListNode *newNode = new ListNode(data);
+
+        if (head == NULL || data < head->data)
+        {
+            newNode->next = head;
+            head = newNode;
+        }
+        else
+        {
+            ListNode *temp = head;
+            while (temp->next != NULL && temp->next->data < data)
+            {
+                temp = temp->next;
+            }
+            newNode->next = temp->next;
+            temp->next = newNode;
+        }
+    }
+    void display()
+    {
+        ListNode *temp = head;
+        if (head == NULL)
+        {
+            cout << "empty";
+            return;
+        }
+        while (temp != NULL)
+        {
+            cout << temp->data << " ";
+            temp = temp->next;
+        }
+    }
+};
+
+ListNode *merge(ListNode *&head1, ListNode *&head2)
+{
+
+    ListNode *p1 = head1;
+    ListNode *p2 = head2;
+    ListNode *dummyNode = new ListNode(-1);
+    ListNode *p3 = dummyNode;
+
+    while (p1 != NULL && p2 != NULL)
+    {
+
+        if (p1->data < p2->data)
+        {
+            p3->next = p1;
+            p1 = p1->next;
+        }
+        else
+        {
+            p3->next = p2;
+            p2 = p2->next;
+        }
+        p3 = p3->next;
+    }
+    while (p1 != NULL)
+    {
+        p3->next = p1;
+        p1 = p1->next;
+        p3 = p3->next;
+    }
+    while (p2 != NULL)
+    {
+        p3->next = p2;
+        p2 = p2->next;
+        p3 = p3->next;
+    }
+    return dummyNode->next;
+}
+ListNode *merge2(ListNode *&head1, ListNode *&head2)
+{
+
+    if (head1 == NULL)
+    {
+        return head2;
+    }
+    if (head2 == NULL)
+    {
+        return head1;
+    }
+    ListNode *result;
+    if (head1->data < head2->data)
+    {
+        result = head1;
+        result->next = merge2(head1->next, head2);
+    }
+    else
+    {
+        result = head2;
+        result->next = merge2(head1, head2->next);
+    }
+    return result;
+}
+
+int main()
+{
+    SingleLinkedlist list1;
+    SingleLinkedlist list2;
+
+    int input1, input2;
+    string x, y;
+    getline(cin, x);
+    getline(cin, y);
+
+    stringstream ss1(x);
+    stringstream ss2(y);
+
+    if (x == "empty" || y == "empty")
+    {
+        cout << "empty";
+        return 0;
+    }
+
+    while (ss1 >> input1)
+    {
+        int *array1 = new int[input1];
+        for (int i = 0; i < input1; i++)
+        {
+            ss1 >> array1[i];
+            list1.insert(array1[i]);
+        }
+    }
+    if (y != "empty")
+    {
+        while (ss2 >> input2)
+        {
+            int *array2 = new int[input2];
+            for (int i = 0; i < input2; i++)
+            {
+                ss2 >> array2[i];
+                list2.insert(array2[i]);
+            }
+        }
+    }
+
+    ListNode *mergedList = merge2(list1.head, list2.head);
+
+    SingleLinkedlist mergedLinkedList;
+    mergedLinkedList.head = mergedList;
+    mergedLinkedList.display();
+
+    return 0;
+}
